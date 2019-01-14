@@ -39,7 +39,7 @@ export interface RemoveEvent<Entity> {
     /**
      * Database representation of entity that is being removed.
      */
-    databaseEntity: Entity;
+    databaseEntity?: Entity;
 
     /**
      * Id or ids of the entity that is being removed.

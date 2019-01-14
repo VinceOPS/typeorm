@@ -28,7 +28,7 @@ export interface InsertEvent<Entity> {
     /**
      * Inserting event.
      */
-    entity: Entity;
+    entity?: Entity;
 
     /**
      * Metadata of the entity.

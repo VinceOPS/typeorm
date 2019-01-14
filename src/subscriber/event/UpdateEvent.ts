@@ -30,7 +30,7 @@ export interface UpdateEvent<Entity> {
     /**
      * Updating entity.
      */
-    entity: Entity;
+    entity?: Entity;
 
     /**
      * Metadata of the entity.
@@ -40,7 +40,7 @@ export interface UpdateEvent<Entity> {
     /**
      * Updating entity in the database.
      */
-    databaseEntity: Entity;
+    databaseEntity?: Entity;
 
     /**
      * List of updated columns. In query builder has no affected
