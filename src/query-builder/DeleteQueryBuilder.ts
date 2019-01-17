@@ -66,7 +66,7 @@ export class DeleteQueryBuilder<Entity> extends QueryBuilder<Entity> implements 
             const deleteResult = new DeleteResult();
             const result = await queryRunner.query(sql, parameters);
 
-            switch (queryRunner.connection.name) {
+            switch (queryRunner.connection.options.type) {
                 case "mysql":
                 case "mariadb": {
                     deleteResult.raw = result;
