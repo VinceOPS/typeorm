@@ -668,14 +668,24 @@ export abstract class QueryBuilder<Entity> {
      */
     protected getReturningColumns(): ColumnMetadata[] {
         const columns: ColumnMetadata[] = [];
+        const { hasMetadata } = this.expressionMap.mainAlias!;
+
         if (this.expressionMap.returning instanceof Array) {
             (this.expressionMap.returning as string[]).forEach(columnName => {
-                if (this.expressionMap.mainAlias!.hasMetadata) {
+                if (hasMetadata) {
                     columns.push(...this.expressionMap.mainAlias!.metadata.findColumnsWithPropertyPath(columnName));
                 }
             });
         }
-        return columns;
+
+        if (!hasMetadata) {
+            return columns;
+        }
+
+        const { returnedColumns = [] } = this.expressionMap.mainAlias!.metadata;
+        const columnsProperties = columns.map(col => col.propertyName);
+        // include `returnedColumns`, if any, but do not add columns twice
+        return columns.concat(returnedColumns.filter(col => !columnsProperties.includes(col.propertyName)));
     }
 
     /**
