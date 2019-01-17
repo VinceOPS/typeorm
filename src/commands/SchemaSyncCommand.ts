@@ -7,7 +7,7 @@ const chalk = require("chalk");
 /**
  * Synchronizes database schema with entities.
  */
-export class SchemaSyncCommand implements yargs.CommandModule {
+export class SchemaSyncCommand implements yargs.CommandModule<any, any> {
     command = "schema:sync";
     describe = "Synchronizes your entities with database schema. It runs schema update queries on all connections you have. " +
         "To run update queries on a concrete connection use -c option.";
@@ -26,7 +26,7 @@ export class SchemaSyncCommand implements yargs.CommandModule {
             });
     }
 
-    async handler(args: yargs.Arguments) {
+    async handler(args: any) {
 
         let connection: Connection|undefined = undefined;
         try {

@@ -7,7 +7,7 @@ const chalk = require("chalk");
 /**
  * Creates a new migration file.
  */
-export class MigrationCreateCommand implements yargs.CommandModule {
+export class MigrationCreateCommand implements yargs.CommandModule<any, any> {
 
     command = "migration:create";
     describe = "Creates a new migration file.";
@@ -36,7 +36,7 @@ export class MigrationCreateCommand implements yargs.CommandModule {
             });
     }
 
-    async handler(args: yargs.Arguments) {
+    async handler(args: any) {
         if (args._[0] === "migrations:create") {
             console.log("'migrations:create' is deprecated, please use 'migration:create' instead");
         }

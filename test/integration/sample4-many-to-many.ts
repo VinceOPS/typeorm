@@ -50,7 +50,7 @@ describe("many-to-many", function() {
 
     describe("insert post and details (has inverse relation + full cascade options)", function() {
         let newPost: Post, details: PostDetails, savedPost: Post;
-        
+
         before(reloadDatabase);
 
         before(function() {
@@ -58,13 +58,13 @@ describe("many-to-many", function() {
             details.authorName = "Umed";
             details.comment = "this is post";
             details.metadata = "post,posting,postman";
-            
+
             newPost = new Post();
             newPost.text = "Hello post";
             newPost.title = "this is post title";
             newPost.details = [];
             newPost.details.push(details);
-            
+
             return postRepository.save(newPost).then(post => savedPost = post as Post);
         });
 
@@ -86,7 +86,7 @@ describe("many-to-many", function() {
             expectedPost.id = savedPost.id;
             expectedPost.text = savedPost.text;
             expectedPost.title = savedPost.title;
-            
+
             return postRepository.findOne(savedPost.id).should.eventually.eql(expectedPost);
         });
 
@@ -96,7 +96,7 @@ describe("many-to-many", function() {
             expectedDetails.authorName = savedPost.details[0].authorName;
             expectedDetails.comment = savedPost.details[0].comment;
             expectedDetails.metadata = savedPost.details[0].metadata;
-            
+
             return postDetailsRepository.findOne(savedPost.details[0].id).should.eventually.eql(expectedDetails);
         });
 
@@ -111,7 +111,7 @@ describe("many-to-many", function() {
             expectedPost.details[0].authorName = savedPost.details[0].authorName;
             expectedPost.details[0].comment = savedPost.details[0].comment;
             expectedPost.details[0].metadata = savedPost.details[0].metadata;
-            
+
             return postRepository
                 .createQueryBuilder("post")
                 .leftJoinAndSelect("post.details", "details")
@@ -136,7 +136,7 @@ describe("many-to-many", function() {
 
             expectedDetails.posts = [];
             expectedDetails.posts.push(expectedPost);
-            
+
             return postDetailsRepository
                 .createQueryBuilder("details")
                 .leftJoinAndSelect("details.posts", "posts")
@@ -151,7 +151,7 @@ describe("many-to-many", function() {
             expectedPost.id = savedPost.id;
             expectedPost.text = savedPost.text;
             expectedPost.title = savedPost.title;
-            
+
             return postRepository
                 .createQueryBuilder("post")
                 .where("post.id=:id", { id: savedPost.id })
@@ -165,7 +165,7 @@ describe("many-to-many", function() {
             expectedDetails.authorName = savedPost.details[0].authorName;
             expectedDetails.comment = savedPost.details[0].comment;
             expectedDetails.metadata = savedPost.details[0].metadata;
-            
+
             return postDetailsRepository
                 .createQueryBuilder("details")
                 .where("details.id=:id", { id: savedPost.id })
@@ -248,7 +248,7 @@ describe("many-to-many", function() {
                 .getSingleResult()
                 .should.be.rejectedWith(Error);*/ // not working, find fix
         });
-        
+
     });
 
     describe("cascade updates should not be executed when cascadeUpdate option is not set", function() {
@@ -269,8 +269,7 @@ describe("many-to-many", function() {
             newPost.details = [];
             newPost.details.push(details);
 
-            return postRepository
-                .save(newPost);
+            return postRepository.save(newPost);
         });
 
         it("should ignore updates in the model and do not update the db when entity is updated", function () {
@@ -307,8 +306,7 @@ describe("many-to-many", function() {
             newPost.details = [];
             newPost.details.push(details);
 
-            return postRepository
-                .save(newPost);
+            return postRepository.save(newPost);
         });
 
         it("should remove relation however should not remove details itself", function () {
@@ -377,7 +375,7 @@ describe("many-to-many", function() {
                         .where("post.id=:id")
                         .setParameter("id", newPost.id)
                         .getOne();
-                    
+
                 }).then(reloadedPost => {
                     reloadedPost!.images[0].url.should.be.equal("new-logo.png");
                 });

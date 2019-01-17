@@ -7,7 +7,7 @@ const chalk = require("chalk");
 /**
  * Reverts last migration command.
  */
-export class MigrationRevertCommand implements yargs.CommandModule {
+export class MigrationRevertCommand implements yargs.CommandModule<any, any> {
 
     command = "migration:revert";
     describe = "Reverts last executed migration.";
@@ -32,7 +32,7 @@ export class MigrationRevertCommand implements yargs.CommandModule {
             });
     }
 
-    async handler(args: yargs.Arguments) {
+    async handler(args: any) {
         if (args._[0] === "migrations:revert") {
             console.log("'migrations:revert' is deprecated, please use 'migration:revert' instead");
         }

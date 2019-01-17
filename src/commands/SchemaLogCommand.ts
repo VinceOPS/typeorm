@@ -9,7 +9,7 @@ const chalk = require("chalk");
 /**
  * Shows sql to be executed by schema:sync command.
  */
-export class SchemaLogCommand implements yargs.CommandModule {
+export class SchemaLogCommand implements yargs.CommandModule<any, any> {
 
     command = "schema:log";
     describe = "Shows sql to be executed by schema:sync command. It shows sql log only for your default connection. " +
@@ -29,7 +29,7 @@ export class SchemaLogCommand implements yargs.CommandModule {
             });
     }
 
-    async handler(args: yargs.Arguments) {
+    async handler(args: any) {
 
         let connection: Connection|undefined = undefined;
         try {

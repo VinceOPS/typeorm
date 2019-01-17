@@ -10,7 +10,7 @@ const chalk = require("chalk");
 /**
  * Generates a new migration file with sql needs to be executed to update schema.
  */
-export class MigrationGenerateCommand implements yargs.CommandModule {
+export class MigrationGenerateCommand implements yargs.CommandModule<any, any> {
 
     command = "migration:generate";
     describe = "Generates a new migration file with sql needs to be executed to update schema.";
@@ -39,7 +39,7 @@ export class MigrationGenerateCommand implements yargs.CommandModule {
             });
     }
 
-    async handler(args: yargs.Arguments) {
+    async handler(args: any) {
         if (args._[0] === "migrations:generate") {
             console.log("'migrations:generate' is deprecated, please use 'migration:generate' instead");
         }

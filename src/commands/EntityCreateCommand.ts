@@ -6,7 +6,7 @@ const chalk = require("chalk");
 /**
  * Generates a new entity.
  */
-export class EntityCreateCommand implements yargs.CommandModule {
+export class EntityCreateCommand implements yargs.CommandModule<any, any> {
     command = "entity:create";
     describe = "Generates a new entity.";
 
@@ -33,7 +33,7 @@ export class EntityCreateCommand implements yargs.CommandModule {
             });
     }
 
-    async handler(args: yargs.Arguments) {
+    async handler(args: any) {
         try {
             const fileContent = EntityCreateCommand.getTemplate(args.name);
             const filename = args.name + ".ts";

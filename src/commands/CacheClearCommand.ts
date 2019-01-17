@@ -7,7 +7,7 @@ const chalk = require("chalk");
 /**
  * Clear cache command.
  */
-export class CacheClearCommand implements yargs.CommandModule {
+export class CacheClearCommand implements yargs.CommandModule<any, any> {
 
     command = "cache:clear";
     describe = "Clears all data stored in query runner cache.";
@@ -26,7 +26,7 @@ export class CacheClearCommand implements yargs.CommandModule {
             });
     }
 
-    async handler(args: yargs.Arguments) {
+    async handler(args: any) {
 
         let connection: Connection|undefined = undefined;
         try {

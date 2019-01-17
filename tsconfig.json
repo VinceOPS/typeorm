@@ -6,6 +6,8 @@
         "target": "es5",
         "module": "commonjs",
         "moduleResolution": "node",
+        // @types/yargs is using `unknown` from TS 3+: ignore it, in order to compile
+        "skipLibCheck": true,
         "importHelpers": true,
         "emitDecoratorMetadata": true,
         "experimentalDecorators": true,

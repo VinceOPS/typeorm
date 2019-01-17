@@ -7,7 +7,7 @@ const chalk = require("chalk");
 /**
  * Drops all tables of the database from the given connection.
  */
-export class SchemaDropCommand implements yargs.CommandModule {
+export class SchemaDropCommand implements yargs.CommandModule<any, any> {
     command = "schema:drop";
     describe = "Drops all tables in the database on your default connection. " +
         "To drop table of a concrete connection's database use -c option.";
@@ -26,7 +26,7 @@ export class SchemaDropCommand implements yargs.CommandModule {
             });
     }
 
-    async handler(args: yargs.Arguments) {
+    async handler(args: any) {
 
         let connection: Connection|undefined = undefined;
         try {

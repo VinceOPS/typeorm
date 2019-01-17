@@ -7,7 +7,7 @@ const chalk = require("chalk");
 /**
  * Generates a new project with TypeORM.
  */
-export class InitCommand implements yargs.CommandModule {
+export class InitCommand implements yargs.CommandModule<any, any> {
     command = "init";
     describe = "Generates initial TypeORM project structure. " +
         "If name specified then creates files inside directory called as name. " +
@@ -36,7 +36,7 @@ export class InitCommand implements yargs.CommandModule {
             });
     }
 
-    async handler(args: yargs.Arguments) {
+    async handler(args: any) {
         try {
             const database = args.database || "mysql";
             const isExpress = args.express !== undefined ? true : false;

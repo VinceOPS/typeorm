@@ -6,7 +6,7 @@ const chalk = require("chalk");
 /**
  * Generates a new subscriber.
  */
-export class SubscriberCreateCommand implements yargs.CommandModule {
+export class SubscriberCreateCommand implements yargs.CommandModule<any, any> {
     command = "subscriber:create";
     describe = "Generates a new subscriber.";
 
@@ -33,7 +33,7 @@ export class SubscriberCreateCommand implements yargs.CommandModule {
             });
     }
 
-    async handler(args: yargs.Arguments) {
+    async handler(args: any) {
 
         try {
             const fileContent = SubscriberCreateCommand.getTemplate(args.name);

@@ -8,7 +8,7 @@ const chalk = require("chalk");
 /**
  * Runs migration command.
  */
-export class MigrationRunCommand implements yargs.CommandModule {
+export class MigrationRunCommand implements yargs.CommandModule<any, any> {
 
     command = "migration:run";
     describe = "Runs all pending migrations.";
@@ -33,7 +33,7 @@ export class MigrationRunCommand implements yargs.CommandModule {
             });
     }
 
-    async handler(args: yargs.Arguments) {
+    async handler(args: any) {
         if (args._[0] === "migrations:run") {
             console.log("'migrations:run' is deprecated, please use 'migration:run' instead");
         }
