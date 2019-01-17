@@ -328,6 +328,12 @@ export class EntityMetadataBuilder {
                 return column;
             });
 
+        entityMetadata.returnedColumns = this.metadataArgsStorage.filterReturnedColumns(entityMetadata.inheritanceTree).map(args => new ColumnMetadata({
+            connection: this.connection,
+            entityMetadata: entityMetadata,
+            args: args
+        }).build(this.connection));
+
         // for table inheritance we need to add a discriminator column
         //
         if (entityInheritance && entityInheritance.column) {

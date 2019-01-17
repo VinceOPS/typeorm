@@ -242,6 +242,11 @@ export class EntityMetadata {
     generatedColumns: ColumnMetadata[] = [];
 
     /**
+     * Gets the column with returned flag (see `ReturnedColumn`).
+     */
+    returnedColumns: ColumnMetadata[] = [];
+
+    /**
      * Gets the object id column used with mongodb database.
      */
     objectIdColumn?: ColumnMetadata;

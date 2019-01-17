@@ -48,6 +48,7 @@ export class MetadataArgsStorage {
     readonly generations: GeneratedMetadataArgs[] = [];
     readonly relations: RelationMetadataArgs[] = [];
     readonly joinColumns: JoinColumnMetadataArgs[] = [];
+    readonly returnedColumns: ColumnMetadataArgs[] = [];
     readonly joinTables: JoinTableMetadataArgs[] = [];
     readonly entityListeners: EntityListenerMetadataArgs[] = [];
     readonly relationCounts: RelationCountMetadataArgs[] = [];
@@ -102,6 +103,14 @@ export class MetadataArgsStorage {
     filterRelationCounts(target: (Function|string)[]): RelationCountMetadataArgs[];
     filterRelationCounts(target: (Function|string)|(Function|string)[]): RelationCountMetadataArgs[] {
         return this.filterByTargetAndWithoutDuplicateProperties(this.relationCounts, target);
+    }
+
+    filterReturnedColumns(target: Function|string): ColumnMetadataArgs[];
+    filterReturnedColumns(target: (Function|string)[]): ColumnMetadataArgs[];
+    filterReturnedColumns(target: (Function|string)|(Function|string)[]): ColumnMetadataArgs[] {
+        return this.returnedColumns.filter(col => {
+            return (target instanceof Array ? target.indexOf(col.target) !== -1 : col.target === target);
+        });
     }
 
     filterIndices(target: Function|string): IndexMetadataArgs[];
