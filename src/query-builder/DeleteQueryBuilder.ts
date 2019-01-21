@@ -87,10 +87,19 @@ export class DeleteQueryBuilder<Entity> extends QueryBuilder<Entity> implements 
                     deleteResult.raw = result;
             }
 
+            let entities = this.buildEntitiesFromRawReturnedColumns(deleteResult);
+
             // call after deletion methods in listeners and subscribers
             if (this.expressionMap.callListeners === true && this.expressionMap.mainAlias!.hasMetadata) {
                 const broadcastResult = new BroadcasterResult();
-                queryRunner.broadcaster.broadcastAfterRemoveEvent(broadcastResult, this.expressionMap.mainAlias!.metadata);
+
+                if (!entities || entities.length === 0) {
+                    queryRunner.broadcaster.broadcastAfterRemoveEvent(broadcastResult, this.expressionMap.mainAlias!.metadata);
+                } else {
+                    entities.forEach(entity => {
+                        queryRunner.broadcaster.broadcastAfterRemoveEvent(broadcastResult, this.expressionMap.mainAlias!.metadata, entity);
+                    });
+                }
                 if (broadcastResult.promises.length > 0) await Promise.all(broadcastResult.promises);
             }
 
@@ -257,15 +266,17 @@ export class DeleteQueryBuilder<Entity> extends QueryBuilder<Entity> implements 
         const whereExpression = this.createWhereExpression();
         const returningExpression = this.createReturningExpression();
 
-        if (returningExpression && this.connection.driver instanceof PostgresDriver) {
-            return `DELETE FROM ${tableName}${whereExpression} RETURNING ${returningExpression}`;
+        if (returningExpression) {
+            if (this.connection.driver instanceof PostgresDriver) {
+                return `DELETE FROM ${tableName}${whereExpression} RETURNING ${returningExpression}`;
+            }
 
-        } else if (returningExpression !== "" && this.connection.driver instanceof SqlServerDriver) {
-            return `DELETE FROM ${tableName} OUTPUT ${returningExpression}${whereExpression}`;
-
-        } else {
-            return `DELETE FROM ${tableName}${whereExpression}`;
+            if (this.connection.driver instanceof SqlServerDriver) {
+                return `DELETE FROM ${tableName} OUTPUT ${returningExpression}${whereExpression}`;
+            }
         }
+
+        return `DELETE FROM ${tableName}${whereExpression}`;
     }
 
 }

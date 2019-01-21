@@ -254,7 +254,8 @@ export class Broadcaster {
                         entity: entity,
                         metadata: metadata,
                         databaseEntity: databaseEntity,
-                        entityId: metadata.getEntityIdMixedMap(databaseEntity)
+                        // take the entityId either from `databaseEntity` or `entity`, or use `undefined`
+                        entityId: metadata.getEntityIdMixedMap(databaseEntity) || metadata.getEntityIdMixedMap(entity)
                     });
                     if (executionResult instanceof Promise)
                         result.promises.push(executionResult);

@@ -91,10 +91,20 @@ export class UpdateQueryBuilder<Entity> extends QueryBuilder<Entity> implements 
                 await returningResultsEntityUpdator.update(updateResult, this.expressionMap.whereEntities);
             }
 
+            let entities = this.buildEntitiesFromRawReturnedColumns(updateResult);
+
             // call after updation methods in listeners and subscribers
             if (this.expressionMap.callListeners === true && this.expressionMap.mainAlias!.hasMetadata) {
                 const broadcastResult = new BroadcasterResult();
-                queryRunner.broadcaster.broadcastAfterUpdateEvent(broadcastResult, this.expressionMap.mainAlias!.metadata);
+
+                if (!entities || entities.length === 0) {
+                    queryRunner.broadcaster.broadcastAfterUpdateEvent(broadcastResult, this.expressionMap.mainAlias!.metadata);
+                } else {
+                    entities.forEach(entity => {
+                        queryRunner.broadcaster.broadcastAfterUpdateEvent(broadcastResult, this.expressionMap.mainAlias!.metadata, entity);
+                    });
+                }
+
                 if (broadcastResult.promises.length > 0) await Promise.all(broadcastResult.promises);
             }
 
@@ -470,15 +480,17 @@ export class UpdateQueryBuilder<Entity> extends QueryBuilder<Entity> implements 
         const returningExpression = this.createReturningExpression();
 
         // generate and return sql update query
-        if (returningExpression && (this.connection.driver instanceof PostgresDriver || this.connection.driver instanceof OracleDriver)) {
-            return `UPDATE ${this.getTableName(this.getMainTableName())} SET ${updateColumnAndValues.join(", ")}${whereExpression} RETURNING ${returningExpression}`;
+        if (returningExpression) {
+            if (this.connection.driver instanceof PostgresDriver || this.connection.driver instanceof OracleDriver) {
+                return `UPDATE ${this.getTableName(this.getMainTableName())} SET ${updateColumnAndValues.join(", ")}${whereExpression} RETURNING ${returningExpression}`;
+            }
 
-        } else if (returningExpression && this.connection.driver instanceof SqlServerDriver) {
-            return `UPDATE ${this.getTableName(this.getMainTableName())} SET ${updateColumnAndValues.join(", ")} OUTPUT ${returningExpression}${whereExpression}`;
-
-        } else {
-            return `UPDATE ${this.getTableName(this.getMainTableName())} SET ${updateColumnAndValues.join(", ")}${whereExpression}`; // todo: how do we replace aliases in where to nothing?
+            if (this.connection.driver instanceof SqlServerDriver) {
+                return `UPDATE ${this.getTableName(this.getMainTableName())} SET ${updateColumnAndValues.join(", ")} OUTPUT ${returningExpression}${whereExpression}`;
+            }
         }
+
+        return `UPDATE ${this.getTableName(this.getMainTableName())} SET ${updateColumnAndValues.join(", ")}${whereExpression}`; // todo: how do we replace aliases in where to nothing?
     }
 
     /**

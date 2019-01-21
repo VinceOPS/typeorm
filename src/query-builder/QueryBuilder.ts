@@ -19,6 +19,11 @@ import {OracleDriver} from "../driver/oracle/OracleDriver";
 import {EntitySchema} from "../";
 import {FindOperator} from "../find-options/FindOperator";
 import {In} from "../find-options/operator/In";
+import {RawSqlResultsToEntityTransformer} from "./transformer/RawSqlResultsToEntityTransformer";
+import {DeleteResult} from "./result/DeleteResult";
+import {UpdateResult} from "./result/UpdateResult";
+import {InsertResult} from "./result/InsertResult";
+import {DriverUtils} from "../driver/DriverUtils";
 
 // todo: completely cover query builder with tests
 // todo: entityOrProperty can be target name. implement proper behaviour if it is.
@@ -471,6 +476,38 @@ export abstract class QueryBuilder<Entity> {
     // -------------------------------------------------------------------------
 
     /**
+     * Takes the result of an operation as input and uses its embedded array
+     * of `raw` results to build partial entities from it.
+     *
+     * @param operationResult Result of the operation (insert, update, delete).
+     *
+     * @return An array of partial entities built from returned (raw) columns, or `undefined`.
+     */
+    protected buildEntitiesFromRawReturnedColumns(operationResult: DeleteResult | InsertResult | UpdateResult) {
+        const { raw } = operationResult;
+        if (!this.connection.driver.isReturningSqlSupported() || !Array.isArray(raw) || raw.length === 0) {
+            return undefined;
+        }
+
+        /* Use `RawSqlResultsToEntityTransformer` just as `SelectQueryBuilder` does.
+        However, the name of the alias used in Insert, Update and Delete query builders
+        is not defined the same way, thus, adapt it */
+        const transformer = new RawSqlResultsToEntityTransformer(this.expressionMap, this.connection.driver, [], [], this.queryRunner);
+        const aliasCopy = Object.assign({}, this.expressionMap.mainAlias!, {
+            metadata: this.expressionMap.mainAlias!.metadata,
+            name: this.expressionMap.mainAlias!.metadata.name,
+        });
+
+        // For each column in the raw result, preprend the alias name (to imitate the behavior of SelectQueryBuilder)
+        const rawResultsToTransform = raw.map((rawResult: any) => Object.entries(rawResult).reduce((acc, [key, val]) => {
+            acc[DriverUtils.buildColumnAlias(this.connection.driver, aliasCopy.name, key)] = val;
+            return acc;
+        }, {} as { [k: string]: any }));
+
+        return transformer.transform(rawResultsToTransform, aliasCopy);
+    }
+
+    /**
      * Gets escaped table name with schema name if SqlServer driver used with custom
      * schema name, otherwise returns escaped table name.
      */
@@ -638,6 +675,8 @@ export abstract class QueryBuilder<Entity> {
                 if (driver instanceof SqlServerDriver) {
                     if (this.expressionMap.queryType === "insert" || this.expressionMap.queryType === "update") {
                         return "INSERTED." + name;
+                    } else if (this.expressionMap.queryType === "delete") {
+                        return "DELETED." + name;
                     } else {
                         return this.escape(this.getMainTableName()) + "." + name;
                     }
