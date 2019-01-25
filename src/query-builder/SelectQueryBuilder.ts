@@ -31,7 +31,7 @@ import {AbstractSqliteDriver} from "../driver/sqlite-abstract/AbstractSqliteDriv
 import {QueryResultCacheOptions} from "../cache/QueryResultCacheOptions";
 import {OffsetWithoutLimitNotSupportedError} from "../error/OffsetWithoutLimitNotSupportedError";
 import {BroadcasterResult} from "../subscriber/BroadcasterResult";
-import {abbreviate} from "../util/StringUtils";
+import {abbreviate, shorten} from "../util/StringUtils";
 import {SelectQueryBuilderOption} from "./SelectQueryBuilderOption";
 import {ObjectUtils} from "../util/ObjectUtils";
 
@@ -1933,6 +1933,9 @@ export class SelectQueryBuilder<Entity> extends QueryBuilder<Entity> implements 
         const columnAliasName = aliasName + "_" + columnName;
         if (columnAliasName.length > 29 && this.connection.driver instanceof OracleDriver)
             return aliasName  + "_" + abbreviate(columnName, 2);
+
+        if (columnAliasName.length > 63 && this.connection.driver instanceof PostgresDriver)
+            return `${shorten(aliasName)}_${columnName}`;
 
         return columnAliasName;
     }

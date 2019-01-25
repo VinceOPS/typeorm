@@ -8,9 +8,10 @@ import {RelationMetadata} from "../../metadata/RelationMetadata";
 import {OrmUtils} from "../../util/OrmUtils";
 import {QueryExpressionMap} from "../QueryExpressionMap";
 import {EntityMetadata} from "../../metadata/EntityMetadata";
-import {abbreviate} from "../../util/StringUtils";
+import {abbreviate, shorten} from "../../util/StringUtils";
 import {OracleDriver} from "../../driver/oracle/OracleDriver";
 import {QueryRunner} from "../..";
+import {PostgresDriver} from "../../driver/postgres/PostgresDriver";
 
 /**
  * Transforms raw sql results returned from the database into entity object.
@@ -312,6 +313,9 @@ export class RawSqlResultsToEntityTransformer {
         const columnAliasName = aliasName + "_" + columnName;
         if (columnAliasName.length > 29 && this.driver instanceof OracleDriver)
             return aliasName  + "_" + abbreviate(columnName, 2);
+
+        if (columnAliasName.length > 63 && this.driver instanceof PostgresDriver)
+            return `${shorten(aliasName)}_${columnName}`;
 
         return columnAliasName;
     }

@@ -3,8 +3,9 @@ import {Connection} from "../../connection/Connection";
 import {RelationIdLoadResult} from "./RelationIdLoadResult";
 import {ObjectLiteral} from "../../common/ObjectLiteral";
 import {QueryRunner} from "../../query-runner/QueryRunner";
-import {abbreviate} from "../../util/StringUtils";
+import {abbreviate, shorten} from "../../util/StringUtils";
 import {OracleDriver} from "../../driver/oracle/OracleDriver";
+import {PostgresDriver} from "../../driver/postgres/PostgresDriver";
 
 export class RelationIdLoader {
 
@@ -188,6 +189,9 @@ export class RelationIdLoader {
         const columnAliasName = aliasName + "_" + columnName;
         if (columnAliasName.length > 29 && this.connection.driver instanceof OracleDriver)
             return aliasName  + "_" + abbreviate(columnName, 2);
+
+        if (columnAliasName.length > 63 && this.connection.driver instanceof PostgresDriver)
+            return `${shorten(aliasName)}_${columnName}`;
 
         return columnAliasName;
     }

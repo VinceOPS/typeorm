@@ -10,6 +10,7 @@ feel free to ask us and community.
 ### Bug Fixes
 
 * fixed signatures of `update`/`insert` methods, some `find*` methods in repositories, entity managers, BaseEntity and QueryBuilders
+* fixed "deep relations" not loaded/mapped due to the built-in max length of Postgres ([#3118](https://github.com/typeorm/typeorm/issues/3118))
 
 ### Features
 
