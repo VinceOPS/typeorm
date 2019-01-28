@@ -107,6 +107,12 @@ export class MongoDriver implements Driver {
      */
     dataTypeDefaults: DataTypeDefaults;
 
+    /**
+     * No documentation specifying a maximum length for identifiers could be found
+     * for MongoDB.
+     */
+    maxAliasLength: number;
+
     // -------------------------------------------------------------------------
     // Protected Properties
     // -------------------------------------------------------------------------

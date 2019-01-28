@@ -273,6 +273,13 @@ export class MysqlDriver implements Driver {
         "bigint": { width: 20 }
     };
 
+
+    /**
+     * Max length allowed by MySQL for aliases.
+     * @see https://dev.mysql.com/doc/refman/8.0/en/identifiers.html
+     */
+    maxAliasLength = 256;
+
     // -------------------------------------------------------------------------
     // Constructor
     // -------------------------------------------------------------------------
